@@ -1,8 +1,8 @@
 # Sudoku
 
 A Sudoku web app built with React/TypeScript and a Python backend that generates and solves
-puzzles using [Dancing Links / Algorithm X](https://en.wikipedia.org/wiki/Dancing_Links)
-(Knuth's exact-cover algorithm). A terminal CLI version is also included.
+puzzles using Dancing Links / Algorithm X (Knuth's exact-cover algorithm). A terminal CLI
+version is also included.
 
 ## Project structure
 
