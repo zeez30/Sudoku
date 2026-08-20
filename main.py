@@ -1,119 +1,11 @@
-import random
-import copy
+import re
 import sys
-from Data_Structures.DLX import DLX
+import os
 
-#define difficulty levels for the sudoku game
-DIFFICULTY_LEVELS = {
-    'easy': 10,
-    'intermediate': 20,
-    'hard': 30,
-
-}
-# helper function to check if a string can be converted to integer
-def valid_integer(string):
-    try:
-        int(string)
-        return True
-    except ValueError:
-        return False
-
-
-# function to check if a number is valid in a sudoku puzzle based on the rules
-def check_valid_num(puzzle, num, coord):
-    #Calculate the starting points for the 3x3 square the number would belong to
-    square_y = coord[0] - (coord[0] % 3)
-    square_x = coord[1] - (coord[1] % 3)
-
-    # check if number already exists in row
-    if puzzle[coord[0]].count(num) != 0:
-        return False
-    # check if number already exits in column
-    if [row[coord[1]] for row in puzzle].count(num) != 0:
-        return False
-    # check if number exits in the 3x3 square
-    for i in range(3):
-        for j in range(3):
-            if puzzle[square_y + i][square_x + j] == num:
-                return False
-
-    return True
-
-
-# Uses the DLX algorithm to check if a sudoku puzzle is solvable
-def check_sudoku(puzzle_str):
-    cover = DLX(puzzle_str)
-    cover.solve()
-    return cover.at_least_one_solution and not cover.multiple_solutions
-
-
-# function to create a filled puzzle
-def generate_puzzle():
-    # initalizes empty puzzle with a tile counter set to 0
-    new_puzzle = {
-        'puzzle': [[0 for i in range(9)] for j in range(9)],
-        'current_space': 0
-    }
-
-    # recursive function to build upon above puzzle
-    def build_sudoku():
-        space = new_puzzle['current_space']
-        # the counter being at 81 indicates that the puzzle is full
-        if space == 81:
-            return
-        # creates coordinates of current tile from counter
-        coord = [int(space // 9), space % 9]
-
-        # shuffled list of nums 1-9
-        num_list = list(range(1, 10))
-        random.shuffle(num_list)
-
-        # tries nums 1-9 in random order at current tile
-        for num in num_list:
-            if new_puzzle['current_space'] == 81:
-                return
-            if check_valid_num(new_puzzle['puzzle'], num, coord):
-                new_puzzle['puzzle'][coord[0]][coord[1]] = num
-                new_puzzle['current_space'] += 1
-                build_sudoku()
-
-        # when the puzzle is full there is no need for resets as the function unwinds
-        if new_puzzle['current_space'] == 81:
-            return
-
-        # sets current tile back to 0 and rewinds counter before backtracking
-        new_puzzle['puzzle'][coord[0]][coord[1]] = 0
-        new_puzzle['current_space'] -= 1
-        return
-
-    build_sudoku()
-    return ''.join([''.join([str(n) for n in m]) for m in new_puzzle['puzzle']])
-
-#Function to generate a sudoku puzzle with a specified difficulty level
-def generate_sudoku(difficulty='easy'):
-    # Generate a fully solved puzzle
-    solved_puzzle = generate_puzzle()
-    puzzle = list(solved_puzzle)
-
-    # Determine the number of tiles to remove based on the difficulty level
-    tiles_to_remove = DIFFICULTY_LEVELS.get(difficulty, DIFFICULTY_LEVELS['easy'])
-
-    # Create a list to keep track of removed tiles
-    removed_tiles = []
-
-    # Remove tiles until the desired number is reached
-    while len(removed_tiles) < tiles_to_remove:
-        cell = random.randint(0, 80)
-        if puzzle[cell] == '0': # Ensure we're not removing a tile that's already removed
-            continue
-        removed_tiles.append(cell)
-        puzzle[cell] = '0'
-
-    # Convert the list back to a string for consistency with the rest of your code
-    puzzle = ''.join(puzzle)
-
-    return puzzle, solved_puzzle
-
+# the canonical DLX/Sudoku data structures live under api/, shared with the
+# Vercel serverless functions rather than duplicated here
+sys.path.insert(0, os.path.join(os.path.dirname(os.path.abspath(__file__)), 'api'))
+from Data_Structures.Generator import generate_puzzle, DIFFICULTY_CELLS
 
 
 # function to print a nice looking sudoku puzzle
@@ -137,26 +29,26 @@ def print_sudoku(sudoku_str):
 
         row_strings.append(row_string.replace('0', ' '))
 
-    # top line
-    print(' _________________')
+    divider = ' ' + '_' * len(row_strings[0])
 
-    # rows are printed with a pipe on the end
+    # top line
+    print(divider)
+
+    # rows are printed with a pipe on the end, divider line after every 3rd row
     for i, row_string in enumerate(row_strings):
-        # rows 3, 6 and 9 are underlined
+        print(f'{row_string}|')
         if not (i + 1) % 3:
-            print("\u0332".join(row_string) + '|')
-        else:
-            print(f'{row_string}|')
+            print(divider)
 
 
 # Function to start the application
 def play():
     difficulty = input('Choose difficulty level (easy, intermediate, hard): ').lower()
-    if difficulty not in DIFFICULTY_LEVELS:
+    if difficulty not in DIFFICULTY_CELLS:
         print("Invalid difficulty level. Defaulting to 'easy'.")
         difficulty = 'easy'
 
-    new_sudoku, new_sudoku_solved = generate_sudoku(difficulty)
+    new_sudoku, new_sudoku_solved = generate_puzzle(difficulty)
     playing = True
 
     while playing:
@@ -171,11 +63,13 @@ def play():
             playing = False
             continue
 
-        # Parsing the input
+        # Parsing the input, e.g. 'r3c2 4' -> row 3, col 2, digit 4
         try:
-            row, col, num = arg.split()
-            row = int(row[1:])
-            col = int(col[1:])
+            cell_ref, num = arg.split()
+            match = re.fullmatch(r'r([1-9])c([1-9])', cell_ref)
+            if not match:
+                raise ValueError
+            row, col = int(match.group(1)), int(match.group(2))
             num = int(num)
         except ValueError:
             print("Invalid input. Please try again.")

@@ -5,7 +5,6 @@ from http.server import BaseHTTPRequestHandler
 
 sys.path.insert(0, os.path.dirname(__file__))
 from Data_Structures.DLX import DLX
-from Data_Structures.Sudoku import Sudoku
 
 
 def _solve(puzzle_string: str) -> str | None:

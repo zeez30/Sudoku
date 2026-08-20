@@ -3,7 +3,7 @@ import type { Cell, GameStatus, Difficulty } from '../types';
 import { MAX_MISTAKES } from '../types';
 
 /** Convert a flat 81-char string into a 9x9 Cell grid */
-function buildGrid(puzzle: string, _solution: string): Cell[][] {
+function buildGrid(puzzle: string): Cell[][] {
   return Array.from({ length: 9 }, (_, r) =>
     Array.from({ length: 9 }, (_, c) => {
       const i = r * 9 + c;
@@ -56,7 +56,7 @@ export function useGame() {
         body: JSON.stringify({ difficulty: d }),
       });
       const data = await res.json();
-      setGrid(buildGrid(data.puzzle, data.solution));
+      setGrid(buildGrid(data.puzzle));
       setSolution(data.solution);
       setStatus('playing');
     } catch {
