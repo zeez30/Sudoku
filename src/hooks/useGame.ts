@@ -30,15 +30,15 @@ export function useGame() {
   const [noteMode, setNoteMode]       = useState(false);
   const timerRef = useRef<ReturnType<typeof setInterval> | null>(null);
 
-  /** Start/stop the timer based on game status */
+  /** Start/stop the timer based on game status. Easy mode is untimed by design. */
   useEffect(() => {
-    if (status === 'playing') {
+    if (status === 'playing' && difficulty !== 'easy') {
       timerRef.current = setInterval(() => setSeconds(s => s + 1), 1000);
     } else {
       if (timerRef.current) clearInterval(timerRef.current);
     }
     return () => { if (timerRef.current) clearInterval(timerRef.current); };
-  }, [status]);
+  }, [status, difficulty]);
 
   /** Fetch a new puzzle from the generate API */
   const newGame = useCallback(async (diff?: Difficulty) => {

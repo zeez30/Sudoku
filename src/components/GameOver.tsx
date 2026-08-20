@@ -1,8 +1,9 @@
-import type { GameStatus } from '../types';
+import type { GameStatus, Difficulty } from '../types';
 
 interface Props {
   status: GameStatus;
   seconds: number;
+  difficulty: Difficulty;
   onNewGame: () => void;
 }
 
@@ -12,40 +13,40 @@ function fmt(s: number): string {
   return `${m}:${sec}`;
 }
 
-export default function GameOver({ status, seconds, onNewGame }: Props) {
+export default function GameOver({ status, seconds, difficulty, onNewGame }: Props) {
   if (status !== 'won' && status !== 'lost') return null;
 
   const won = status === 'won';
+  const showTime = difficulty !== 'easy';
 
   return (
     /* full-screen overlay */
     <div className="absolute inset-0 flex items-center justify-center
-      bg-[#101913]/90 backdrop-blur-sm z-10 rounded-lg">
+      bg-bg/90 backdrop-blur-sm z-10 rounded-lg p-4">
       <div className="text-center flex flex-col items-center gap-4 p-8
-        bg-[#140e1b] border border-[#344b07] rounded-xl">
+        bg-surface border border-line rounded-xl">
 
-        <h2 className="font-display font-bold text-2xl"
-            style={{ color: won ? '#edf7b5' : '#aa2422' }}>
+        <h2 className={`font-display font-bold text-2xl ${won ? 'text-primary' : 'text-danger'}`}>
           {won ? 'Puzzle solved' : 'Game over'}
         </h2>
 
         {won && (
-          <p className="font-mono text-sm text-[#b05f1c]">
-            Completed in {fmt(seconds)}
+          <p className="font-mono text-sm text-accent">
+            {showTime ? `Completed in ${fmt(seconds)}` : 'Nice work!'}
           </p>
         )}
 
         {!won && (
-          <p className="font-mono text-sm text-[#b2f5fa]">
+          <p className="font-mono text-sm text-secondary">
             Too many mistakes
           </p>
         )}
 
         <button
           onClick={onNewGame}
-          className="mt-2 px-6 py-2 rounded bg-[#344b07] text-[#edf7b5]
-            font-mono text-sm border border-[#344b07]
-            hover:bg-[#b05f1c] hover:border-[#b05f1c]
+          className="mt-2 px-6 py-3 rounded bg-line text-primary
+            font-mono text-sm border border-line
+            hover:bg-accent hover:border-accent
             active:scale-95 transition-all duration-100"
         >
           Play again

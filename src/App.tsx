@@ -25,13 +25,10 @@ export default function App() {
   }, [placeDigit]);
 
   return (
-    <div className="min-h-screen bg-[#101913] flex flex-col items-center justify-center px-4 py-8 gap-5">
+    <div className="min-h-screen bg-bg flex flex-col items-center justify-center px-4 py-6 sm:py-8 gap-4 sm:gap-5">
 
       {/* title */}
-      <div className="text-center">
-        <h1 className="font-display font-bold text-3xl text-gradient">Sudoku</h1>
-        <p className="font-mono text-xs text-[#b2f5fa] mt-1">Dancing Links · Algorithm X</p>
-      </div>
+      <h1 className="font-mono font-bold text-3xl text-primary">Sudoku</h1>
 
       {/* controls bar */}
       <Controls
@@ -46,14 +43,14 @@ export default function App() {
       {/* board + overlay wrapper */}
       <div className="relative">
         {loading ? (
-          <div className="flex items-center justify-center rounded-lg bg-[#140e1b] border border-[#344b07]"
-               style={{ width: 'min(90vw, 450px)', height: 'min(90vw, 450px)' }}>
-            <span className="font-mono text-sm text-[#b05f1c]">Generating puzzle...</span>
+          <div className="flex items-center justify-center rounded-lg bg-surface border border-line"
+               style={{ width: 'min(94vw, 450px)', height: 'min(94vw, 450px)' }}>
+            <span className="font-mono text-sm text-accent">Generating puzzle...</span>
           </div>
         ) : (
           <Board grid={grid} selected={selected} onSelect={(r, c) => setSelected([r, c])} />
         )}
-        <GameOver status={status} seconds={seconds} onNewGame={() => newGame()} />
+        <GameOver status={status} seconds={seconds} difficulty={difficulty} onNewGame={() => newGame()} />
       </div>
 
       {/* number pad */}
@@ -69,8 +66,8 @@ export default function App() {
         <button
           onClick={() => newGame()}
           className="font-mono text-sm px-6 py-3 rounded
-            bg-[#344b07] text-[#edf7b5] border border-[#344b07]
-            hover:bg-[#b05f1c] hover:border-[#b05f1c]
+            bg-line text-primary border border-line
+            hover:bg-accent hover:border-accent
             active:scale-95 transition-all"
         >
           Start game

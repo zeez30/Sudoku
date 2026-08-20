@@ -17,8 +17,8 @@ export default function Board({ grid, selected, onSelect }: Props) {
   if (!grid.length) return null;
 
   return (
-    <div className="grid grid-cols-9 border-2 border-[#344b07] rounded-lg overflow-hidden"
-         style={{ width: 'min(90vw, 450px)', height: 'min(90vw, 450px)' }}>
+    <div className="grid grid-cols-9 border-2 border-line rounded-lg overflow-hidden"
+         style={{ width: 'min(94vw, 450px)', height: 'min(94vw, 450px)' }}>
       {grid.map((row, r) =>
         row.map((cell, c) => {
           const isSelected   = selected?.[0] === r && selected?.[1] === c;
@@ -30,10 +30,10 @@ export default function Board({ grid, selected, onSelect }: Props) {
           const boxRight  = (c + 1) % 3 === 0 && c !== 8;
           const boxBottom = (r + 1) % 3 === 0 && r !== 8;
 
-          let bg = 'bg-[#101913]';
-          if (isSelected)        bg = 'bg-[#344b07]';
-          else if (sameValue)    bg = 'bg-[#1e3010]';
-          else if (isHighlighted) bg = 'bg-[#161d13]';
+          let bg = 'bg-bg';
+          if (isSelected)         bg = 'bg-line';
+          else if (sameValue)     bg = 'bg-line/40';
+          else if (isHighlighted) bg = 'bg-surface';
 
           return (
             <div
@@ -41,18 +41,18 @@ export default function Board({ grid, selected, onSelect }: Props) {
               onClick={() => onSelect(r, c)}
               className={`
                 ${bg} flex items-center justify-center cursor-pointer
-                border-[0.5px] border-[#271b36] relative select-none
+                border-[0.5px] border-hairline relative select-none touch-manipulation
                 transition-colors duration-100
-                ${boxRight  ? 'border-r-2 border-r-[#344b07]' : ''}
-                ${boxBottom ? 'border-b-2 border-b-[#344b07]' : ''}
+                ${boxRight  ? 'border-r-2 border-r-line' : ''}
+                ${boxBottom ? 'border-b-2 border-b-line' : ''}
               `}
             >
               {cell.value !== 0 ? (
                 <span className={`
                   font-mono text-base font-bold leading-none
-                  ${cell.isError   ? 'text-[#aa2422]' :
-                    cell.isGiven   ? 'text-[#edf7b5]' :
-                                     'text-[#b05f1c]'}
+                  ${cell.isError   ? 'text-danger' :
+                    cell.isGiven   ? 'text-primary' :
+                                     'text-accent'}
                 `}>
                   {cell.value}
                 </span>
@@ -61,7 +61,7 @@ export default function Board({ grid, selected, onSelect }: Props) {
                 <div className="grid grid-cols-3 w-full h-full p-[1px]">
                   {[1,2,3,4,5,6,7,8,9].map(n => (
                     <span key={n} className="flex items-center justify-center
-                      text-[6px] font-mono text-[#b05f1c] leading-none">
+                      text-[6px] font-mono text-accent leading-none">
                       {cell.notes.includes(n) ? n : ''}
                     </span>
                   ))}

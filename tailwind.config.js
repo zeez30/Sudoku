@@ -4,13 +4,14 @@ export default {
   theme: {
     extend: {
       colors: {
-        bg:            '#0a070e',
-        surface:       '#140e1b',
-        border:        '#271b36',
-        accent:        '#0afbff',
-        violet:        '#c346c3',
-        textprimary:   '#f0f4f8',
-        textsecondary: '#b2f5fa',
+        bg:        '#101913',
+        surface:   '#140e1b',
+        hairline:  '#271b36',
+        line:      '#344b07',
+        primary:   '#edf7b5',
+        accent:    '#b05f1c',
+        danger:    '#aa2422',
+        secondary: '#b2f5fa',
       },
       fontFamily: {
         display: ['Syne', 'sans-serif'],
